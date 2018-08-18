@@ -8,6 +8,19 @@
 
 <body>
     <p>Welcome to the chat app</p>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io(); // that method is available because we load uo the socket.io script above. it initiates a request from the client to the server to open up a web socket and keep that connection open.
+        
+        socket.on('connect', () => {
+            console.log('Connected to server'); // will be printed in the browser console
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
+    </script>
 </body>
 
 </html>
