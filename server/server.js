@@ -3,6 +3,8 @@ const http = require('http');
 const express = require('express'); // http server - express is using node module called 'http' to create http server
 const socketIO = require('socket.io'); // set up a server that supports web sockets, and to create a FE that communicates with the server (has BE and FE libraries)
 
+const { generateMessage } = require('./utils/message');
+
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000; // must have process.env.PORT for heroku.
 const app = express();
@@ -16,30 +18,15 @@ app.use(express.static(publicPath));
 // register an event listener - a client connect to the server
 io.on('connection', (socket) => {
     console.log('New user connected');
-
     // socket.emit emits an event to a specific connection (socket)
-    socket.emit('newMessage', {
-        from: 'Admin',
-        text: 'Welcome to chat app',
-        createdAt:  new Date().getTime()
-    });
-
+    socket.emit('newMessage', generateMessage('Admin', 'Welcome to chat app'));
     // socket.broadcast.emit sends the event to everybody except that socket
-    socket.broadcast.emit('newMessage', {
-        from: 'Admin',
-        text: 'New user joined',
-        createdAt: new Date().getTime()
-    });
+    socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
     socket.on('createMessage', (message) => {
         console.log('createMessage', message);
-
         // io.emit emits an event to every single connection
-        io.emit('newMessage', {
-            from: message.from,
-            text: message.text,
-            createdAt: new Date().getTime()
-        });
+        io.emit('newMessage', generateMessage(message.from, message.text));
     });
 
     socket.on('disconnect', () => {
