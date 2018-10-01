@@ -3,7 +3,7 @@ const http = require('http');
 const express = require('express'); // http server - express is using node module called 'http' to create http server
 const socketIO = require('socket.io'); // set up a server that supports web sockets, and to create a FE that communicates with the server (has BE and FE libraries)
 
-const { generateMessage } = require('./utils/message');
+const { generateMessage, generateLocationMessage } = require('./utils/message');
 
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000; // must have process.env.PORT for heroku.
@@ -30,6 +30,10 @@ io.on('connection', (socket) => {
         // io.emit emits an event to every single connection
         io.emit('newMessage', generateMessage(message.from, message.text));
         callback('This is from the server');
+    });
+
+    socket.on('createLocationMessage', (coords) => {
+        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude))
     });
 
     socket.on('disconnect', () => {
