@@ -1,5 +1,22 @@
 const socket = io(); // that method is available because we load uo the socket.io script above. it initiates a request from the client to the server to open up a web socket and keep that connection open.
 
+/** autoscrolling **/
+function scrollToBottom () {
+    // Selectors
+    const messages = jQuery('#messages');
+    const newMessage = messages.children('li:last-child');
+    // Heights
+    const clientHeight = messages.prop('clientHeight'); // The visible messages container.
+    const scrollTop = messages.prop('scrollTop'); // The number of pixel we scroll down in order to see the messages.
+    const scrollHeight = messages.prop('scrollHeight'); // The entire height of the messages container.
+    const newMessageHeight = newMessage.innerHeight();
+    const lastMessageHeight = newMessage.prev().innerHeight();
+
+    if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+        messages.scrollTop(scrollHeight);
+    }
+}
+
 /** listen to connect event **/
 // arrow functions will work just in chrome, so we are going to use regular functions
 socket.on('connect', function() {
@@ -22,6 +39,7 @@ socket.on('newMessage', function(message) {
     });
 
     jQuery('#messages').append(html);
+    scrollToBottom();
 });
 
 /** listen to newLocationMessage event **/
@@ -36,6 +54,7 @@ socket.on('newLocationMessage', function (message) {
     });
 
     jQuery('#messages').append(html);
+    scrollToBottom();
 });
 
 /** when submit a message in the web page emit a createMessage event **/
