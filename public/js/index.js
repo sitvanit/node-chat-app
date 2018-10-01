@@ -10,20 +10,21 @@ socket.on('disconnect', function() {
 });
 
 socket.on('newMessage', function(message) {
-    console.log('newMessage', message);
+    const formattedTime = moment(message.createdAt).format('h:mm a');
     const li = jQuery('<li></li>');
-    li.text(`${message.from}: ${message.text}`);
+    li.text(`${message.from} ${formattedTime}: ${message.text}`);
     // append the element as the last child
     jQuery('#messages').append(li);
 });
 
 socket.on('newLocationMessage', function (message) {
+    const formattedTime = moment(message.createdAt).format('h:mm a');
     const li = jQuery('<li></li>');
     // The <a> tag defines a hyperlink, which is used to link from one page to another.
     // target="_blank" redirect to a new tab. without it, it will be opened on the same page.
     const a = jQuery('<a target="_blank">My current location</a>');
 
-    li.text(`${message.from}: `);
+    li.text(`${message.from} ${formattedTime}: `);
     a.attr('href', message.url);
     li.append(a);
     jQuery('#messages').append(li);
