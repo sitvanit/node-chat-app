@@ -1,35 +1,44 @@
 const socket = io(); // that method is available because we load uo the socket.io script above. it initiates a request from the client to the server to open up a web socket and keep that connection open.
 
+/** listen to connect event **/
 // arrow functions will work just in chrome, so we are going to use regular functions
 socket.on('connect', function() {
     console.log('Connected to server'); // will be printed in the browser console
 });
 
+/** listen to disconnect event **/
 socket.on('disconnect', function() {
     console.log('Disconnected from server');
 });
 
+/** listen to newMessage event **/
 socket.on('newMessage', function(message) {
     const formattedTime = moment(message.createdAt).format('h:mm a');
-    const li = jQuery('<li></li>');
-    li.text(`${message.from} ${formattedTime}: ${message.text}`);
-    // append the element as the last child
-    jQuery('#messages').append(li);
+    const template = jQuery('#message-template').html();
+    const html = Mustache.render(template, {
+        text: message.text,
+        from: message.from,
+        createdAt: formattedTime
+    });
+
+    jQuery('#messages').append(html);
 });
 
+/** listen to newLocationMessage event **/
 socket.on('newLocationMessage', function (message) {
     const formattedTime = moment(message.createdAt).format('h:mm a');
-    const li = jQuery('<li></li>');
-    // The <a> tag defines a hyperlink, which is used to link from one page to another.
-    // target="_blank" redirect to a new tab. without it, it will be opened on the same page.
-    const a = jQuery('<a target="_blank">My current location</a>');
 
-    li.text(`${message.from} ${formattedTime}: `);
-    a.attr('href', message.url);
-    li.append(a);
-    jQuery('#messages').append(li);
+    const template = jQuery('#location-message-template').html();
+    const html = Mustache.render(template, {
+        url: message.url,
+        from: message.from,
+        createdAt: formattedTime
+    });
+
+    jQuery('#messages').append(html);
 });
 
+/** when submit a message in the web page emit a createMessage event **/
 // jQuery(x).on select element x and sets it
 jQuery('#message-form').on('submit', function(element) {
     element.preventDefault(); // by default the submit of the form refreshes the page and adds query param to the url, we'd like to prevent it.
@@ -44,6 +53,7 @@ jQuery('#message-form').on('submit', function(element) {
     })
 });
 
+/** when click on getloacation buttom, emit a createLocationMessage event **/
 const locationButton = jQuery('#send-location');
 locationButton.on('click', function () {
     if (!navigator.geolocation) {
