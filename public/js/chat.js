@@ -20,12 +20,31 @@ function scrollToBottom () {
 /** listen to connect event **/
 // arrow functions will work just in chrome, so we are going to use regular functions
 socket.on('connect', function() {
-    console.log('Connected to server'); // will be printed in the browser console
+    const params = jQuery.deparam(window.location.search);
+
+    socket.emit('join', params, function (err) {
+        if (err) {
+            alert(err); // will preview the error on the page
+            window.location.href = '/'; // and then redirect to the home page
+        } else {
+            console.log('No error');
+        }
+    })
 });
 
 /** listen to disconnect event **/
 socket.on('disconnect', function() {
     console.log('Disconnected from server');
+});
+
+socket.on('updateUsersList', function(users) {
+    const ul = jQuery('<ul></ul>');
+
+    users.forEach(function(user) {
+        ul.append(jQuery('<li></li>').text(user))
+    });
+
+    jQuery('#users').html(ul);
 });
 
 /** listen to newMessage event **/
