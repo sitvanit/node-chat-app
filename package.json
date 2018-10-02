@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "author": "Sitvanit Meltzer",
   "scripts": {
     "start": "nodemon server/server.js",
     "test": "mocha server/**/*.test.js",
