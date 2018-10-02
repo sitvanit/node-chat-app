@@ -84,7 +84,6 @@ jQuery('#message-form').on('submit', function(element) {
     const messageTextBox = jQuery('[name=message]');
 
     socket.emit('createMessage', {
-        from: 'User',
         text: messageTextBox.val()
     }, function () {
         messageTextBox.val(''); // the acknowledgement callback func just clear the textbox message
